@@ -14,7 +14,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AddIcon from '@mui/icons-material/Add';
 
-function DataGridToolbar({ onRefresh, onRemoveFilter, onAddRow }) {
+function DataGridToolbar({ onRefresh, onRemoveFilter, onAddRow, hasAddAction }) {
     const apiRef = useGridApiContext();
     const activeFilters = useGridSelector(apiRef, gridFilterActiveItemsSelector);
     const columns = useGridSelector(apiRef, gridColumnLookupSelector);
@@ -37,11 +37,12 @@ function DataGridToolbar({ onRefresh, onRemoveFilter, onAddRow }) {
     };
     return (
         <Toolbar>
-            {user?.role === "Clinical Admin" && <Tooltip title="Add record">
-                <ToolbarButton onClick={handleClick}>
-                    <AddIcon />
-                </ToolbarButton>
-            </Tooltip>}
+            {user?.role === "Clinical Admin" && hasAddAction
+                && <Tooltip title="Add record">
+                    < ToolbarButton onClick={handleClick}>
+                        <AddIcon />
+                    </ToolbarButton>
+                </Tooltip>}
             <Tooltip title='Refresh'>
                 <IconButton
                     children={<RefreshIcon />}
@@ -81,7 +82,7 @@ function DataGridToolbar({ onRefresh, onRemoveFilter, onAddRow }) {
                     );
                 })}
             </Stack>
-        </Toolbar>
+        </Toolbar >
     );
 }
 

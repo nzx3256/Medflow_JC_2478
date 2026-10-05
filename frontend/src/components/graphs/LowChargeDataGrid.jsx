@@ -9,8 +9,8 @@ const columns = [
     { field: 'serial_number', headerName: 'Serial Number', width: 150 },
     { field: 'model', headerName: 'Model', width: 160 },
     { field: 'status', headerName: 'Status', width: 130 },
-    { field: 'fuel_level', headerName: 'Fuel Level', width: 120, type: 'number' },
-    { field: 'farm_id', headerName: 'Farm ID', width: 110, type: 'number' },
+    { field: 'charge_level', headerName: 'Fuel Level', width: 120, type: 'number' },
+    { field: 'hospital_id', headerName: 'Farm ID', width: 110, type: 'number' },
 ];
 
 function LowChargeDataGrid() {

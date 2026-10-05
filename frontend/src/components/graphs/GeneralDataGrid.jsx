@@ -90,7 +90,7 @@ function ActionsCell(props) {
 //  }
 function GeneralDataGrid({ endpoint, title, id = 'id', columns, fullCRUD = false, controls = undefined }) {
     if (typeof endpoint !== 'string') {
-        throw new Error("\'endpoint\' parameter must be a string");
+        throw new Error("\'endpoint\' parameter defined must be a string");
     }
     if (typeof title !== 'string') {
         throw new Error("\'title\' parameter must be a string");
@@ -289,7 +289,7 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, fullCRUD = false
         return (
             <Grid size={size}>
                 <FormControl size='small' sx={{ minWidth: 100 }}>
-                    <InputLabel id={`${controls?.label}-filter-label`} sx={{ justifyContent: 'center' }}>
+                    <InputLabel id={`${controls?.label}-filter-label`} sx={{ justifyContent: 'center', color: '#777' }}>
                         {label}
                     </InputLabel>
                     <Select
@@ -297,6 +297,25 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, fullCRUD = false
                         label={label}
                         value={controlValue}
                         onChange={(event) => setControlValue(event.target.value)}
+                        sx={{
+                            '& .MuiOutlinedInput-notchedOutline': {
+                                borderColor: '#777',
+                            },
+                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                                borderColor: '#999',
+                            },
+                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                borderColor: '#1976d2',
+                                borderRadius: 1
+                            },
+                            '&.Mui-focused .MuiSelect-select': {
+                                color: '#1976d2',
+                            },
+                            '& .MuiSelect-select': {
+                                color: '#777',
+                            },
+
+                        }}
                     >
                         {OPTIONS.map((option) => (
                             <MenuItem key={option || 'All'} value={option}>
@@ -331,8 +350,26 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, fullCRUD = false
                             '& .MuiInputBase-root': {
                                 height: 40,
                             },
-                            alignContent: 'center',
-                            display: 'flex'
+                            display: 'flex',
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': { borderColor: '#777' },           // default
+                                '&:hover fieldset': { borderColor: '#999' },// hover
+                                '&.Mui-focused fieldset': { borderColor: '#1976d2', borderRadius: 1 }, // focused
+                            },
+                            // label color
+                            '& .MuiInputLabel-root': {
+                                color: 'gray',
+                                '&.Mui-focused': { color: '#3996f2' },
+                            },
+                            // input (text) color and placeholder
+                            '& .Mui-focused .MuiInputBase-input': {
+                                color: '#1976d2',                                  // text color
+                                opacity: 1,
+                            },
+                            '& .MuiInputBase-input': {
+                                color: '#aaa',                                  // text color
+                                '&::placeholder': { color: '#999', opacity: 1 },
+                            },
                         }}
                         type="number"
                         inputRef={inputRef}
@@ -429,7 +466,8 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, fullCRUD = false
                             toolbar: {
                                 onRefresh: fetchData,
                                 onRemoveFilter: onRemoveFilter,
-                                onAddRow: handleAddRow
+                                onAddRow: handleAddRow,
+                                hasAddAction: fullCRUD
                             }
                         }}
                         initialState={{
