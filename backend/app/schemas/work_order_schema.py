@@ -6,8 +6,8 @@ class WorkOrderBase(BaseModel):
     title: str = Field(min_length=1, max_length=200)
     priority: WorkOrderPriority
     status: WorkOrderStatus
-    equipment_id: int
-    technician_id: int
+    equipment_id: int | None = Field(default=None)
+    technician_id: int | None = Field(default=None)
 
 class WorkOrderRead(WorkOrderBase):
     id: int

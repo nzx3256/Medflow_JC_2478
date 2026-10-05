@@ -2,8 +2,10 @@ import {
     useMemo, useEffect, useState, useRef, useContext, createContext
 } from 'react';
 import {
-    DataGrid, Toolbar, ToolbarButton, gridEditRowsStateSelector, GridRowEditStopReasons,
-    useGridSelector, useGridApiContext, GridActionsCell, GridActionsCellItem
+    DataGrid, Toolbar, ToolbarButton, gridEditRowsStateSelector,
+    GridRowEditStopReasons, useGridSelector, useGridApiContext, GridActionsCell,
+    GridActionsCellItem, GridRowModes,
+
 } from '@mui/x-data-grid';
 import {
     Grid, Alert, Box, Typography, TextField, InputLabel, FormControl, Button, Select,
@@ -13,6 +15,11 @@ import apiClient from '../../api/client.js';
 import { Search } from '@mui/icons-material';
 import DataGridToolbar from '../layout/DataGridToolbar.jsx';
 import { red } from '@mui/material/colors';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Close';
 
 const ActionHandlersContext = createContext({
     handleCancelClick: () => { },
@@ -57,7 +64,7 @@ function ActionsCell(props) {
                         color="inherit"
                     />
                     <GridActionsCellItem
-                        icon={<DeleteIcon />}
+                        icon={<DeleteIcon sx={{ color: 'red' }} />}
                         label="Delete"
                         onClick={() => handleDeleteClick(props.id)}
                         color="inherit"
@@ -81,7 +88,7 @@ function ActionsCell(props) {
 //      min_value?: <number>
 //      max_value?: <number>
 //  }
-function GeneralDataGrid({ endpoint, title, id = 'id', columns, hasActions = false, controls = undefined }) {
+function GeneralDataGrid({ endpoint, title, id = 'id', columns, fullCRUD = false, controls = undefined }) {
     if (typeof endpoint !== 'string') {
         throw new Error("\'endpoint\' parameter must be a string");
     }
@@ -94,8 +101,8 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, hasActions = fal
     if (typeof columns !== 'object') {
         throw new Error("\'columns\' must be formatted to @mui/x-data-grid standards.");
     }
-    if (typeof hasActions !== 'boolean') {
-        throw new Error("optional property \'hasActions\' must be a boolean");
+    if (typeof fullCRUD !== 'boolean') {
+        throw new Error("optional property \'fullCRUD\' must be a boolean");
     }
     let columnsContainsID = columns?.find(c => c.field === id) ? true : false;
     if (typeof id !== 'string' || !columnsContainsID) {
@@ -106,6 +113,7 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, hasActions = fal
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [rowModesModel, setRowModesModel] = useState({});
 
     const [filterModel, setFilterModel] = useState({ items: [] })
     const onRemoveFilter = (filterId) => {
@@ -114,44 +122,145 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, hasActions = fal
         });
     };
 
-    if (hasActions === true) {
-        // TODO: add a actions column to the datagrid GridColDef
-        for (colDef of columns) {
-            console.log(colDef);
+    // build an empty row matching current columns (exclude actions column)
+    const makeEmptyRow = (newId) => {
+        const emptyValues = {};
+        internalColDef.forEach(col => {
+            if (col.field === 'actions' || col.field === id) return;
+            emptyValues[col.field] = col.value ?? '';
+        });
+        return { ...emptyValues, [id]: newId, isNew: true };
+    };
+
+    const handleAddRow = () => {
+        // unique id for new row — use timestamp + counter to avoid collisions
+        const newId = `Edit-${Date.now()}`;
+        const newRow = makeEmptyRow(newId);
+
+        setData((prevRows) => [newRow, ...prevRows]);
+        setRowModesModel((prev) => ({
+            ...prev,
+            [newId]: { mode: GridRowModes.Edit },
+        }));
+    };
+
+    const processRowUpdate = async (newRow, oldRow, param) => {
+        let updatedRow = undefined;
+        const rowId = param["rowId"];
+        try {
+            if (newRow?.isNew) {
+                const resourceUrl = `${endpoint}`;
+                let clonedRow = structuredClone(newRow);
+                delete clonedRow.id;
+                const response = await apiClient.post(resourceUrl, clonedRow);
+                updatedRow = { ...response.data, isNew: false };
+                if (typeof rowId === 'string') {
+                    setData((prevRows) => prevRows.filter((row) => row.id !== rowId));
+                }
+            }
+            else {
+                const resourceUrl = `${endpoint}/${rowId}`;
+                const response = await apiClient.patch(resourceUrl, newRow);
+                updatedRow = { ...response.data, isNew: false };
+            }
+            if (typeof rowId === 'string') {
+                setData((prevRows) => prevRows.filter((row) => row.id !== rowId));
+            }
+            setData((prevRows) =>
+                prevRows.map((r) => (r[id] === newRow[id] ? updatedRow : r))
+            );
+            return updatedRow;
+        }
+        catch (err) {
+            // Have a snack bar pop up
+            console.error("Update failed:", err);
+        }
+    };
+
+    const handleRowEditStop = (params, event) => {
+        if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+            event.defaultMuiPrevented = true;
+        }
+    };
+
+    const internalColDef = useMemo(() => {
+        let foundActions = false;
+        const result = columns.map((colDef) => {
+            if (colDef.field === 'actions') {
+                foundActions = true;
+            }
+            return colDef;
+        });
+        if (fullCRUD === true && !foundActions) {
+            // TODO: add an actions column to the datagrid GridColDef
+            result.push({
+                field: 'actions',
+                type: 'actions',
+                headerName: 'Actions',
+                width: 100,
+                cellClassName: 'actions',
+                minWidth: 100,
+                renderCell: (params) => <ActionsCell {...params} />,
+            });
+        }
+        return result;
+    }, [columns, fullCRUD]);
+
+    async function deleteRow(id) {
+        const resourceUrl = `${endpoint}/${id}`;
+        try {
+            await apiClient.delete(resourceUrl);
+            fetchData();
+        }
+        catch (err) {
+            //console.error("Delete failed:", err);
+            //setError(err.response?.data?.detail || "Delete failed");
+            //Have a snackbar popup with an error
         }
     }
     const actionHandlers = useMemo(
         () => ({
             handleEditClick: (id) => {
-                // setRowModesModel((prevRowModesModel) => ({
-                //     ...prevRowModesModel,
-                //     [id]: { mode: GridRowModes.Edit },
-                // }));
+                setRowModesModel((prevRowModesModel) => ({
+                    ...prevRowModesModel,
+                    [id]: { mode: GridRowModes.Edit },
+                }));
             },
             handleSaveClick: (id) => {
-                // setRowModesModel((prevRowModesModel) => ({
-                //     ...prevRowModesModel,
-                //     [id]: { mode: GridRowModes.View },
-                // }));
+                console.log("Saving");
+                setRowModesModel((prevRowModesModel) => ({
+                    ...prevRowModesModel,
+                    [id]: { mode: GridRowModes.View },
+                }));
             },
             handleDeleteClick: (id) => {
-                // setRows((prevRows) => prevRows.filter((row) => row.id !== id));
+                if (typeof id === 'string') {
+                    setData((prevRows) => prevRows.filter((row) => row.id !== id));
+                }
+                else if (typeof id === 'number') {
+                    deleteRow(id);
+                }
+                //setData((prevRows) => prevRows.filter((row) => row.id !== id));
             },
             handleCancelClick: (id) => {
-                // setRowModesModel((prevRowModesModel) => {
-                //     return {
-                //         ...prevRowModesModel,
-                //         [id]: { mode: GridRowModes.View, ignoreModifications: true },
-                //     };
-                // });
-                //
-                // setRows((prevRows) => {
-                //     const editedRow = prevRows.find((row) => row.id === id);
-                //     if (editedRow.isNew) {
-                //         return prevRows.filter((row) => row.id !== id);
-                //     }
-                //     return prevRows;
-                // });
+                setRowModesModel((prevRowModesModel) => {
+                    return {
+                        ...prevRowModesModel,
+                        [id]: { mode: GridRowModes.View, ignoreModifications: true },
+                    };
+                });
+
+                setData((prevRows) => {
+                    const editedRow = prevRows.find((row) => row.id === id);
+                    if (editedRow == undefined) {
+                        return prevRows;
+                    }
+                    //console.log(JSON.stringify(editedRow));
+                    if (editedRow.isNew) {
+                        return prevRows.filter((row) => row.id !== id);
+                    }
+                    return prevRows;
+                });
             },
         }),
         [],
@@ -231,7 +340,13 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, hasActions = fal
                     />
                 </Grid>
                 <Grid size={1}>
-                    <Button startIcon={<Search />} size='large' variant='outlined' onClick={() => setControlValue(inputRef?.current.value)} sx={{ height: 40, ml: 0 }}>Lookup</Button>
+                    <Button
+                        startIcon={<Search />}
+                        size='large'
+                        variant='outlined'
+                        onClick={() => setControlValue(inputRef?.current.value ?? defVal)}
+                        sx={{ height: 40, ml: 0 }}
+                    > Lookup </Button>
                 </Grid>
             </>
         );
@@ -240,9 +355,9 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, hasActions = fal
     async function fetchData() {
         try {
             let response;
-            if (controlValue != undefined) {
+            if (controlValue != undefined && controlValue !== "") {
                 response = await apiClient.get(endpoint,
-                    { params: { [controls.paramName]: controlValue } }
+                    { params: { [controls.paramName]: controlValue ?? undefined } }
                 );
             }
             else {
@@ -293,29 +408,40 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, hasActions = fal
                 </Grid>
                 {/*loading && !error && <CircularProgress />*/}
                 {error && <Alert severity="error">{error}</Alert>}
-                <DataGrid
-                    rows={data}
-                    columns={columns}
-                    getRowId={(row) => row[id]}
-                    filterModel={filterModel}
-                    onFilterModelChange={(newFilterModel) => setFilterModel(newFilterModel)}
-                    loading={loading}
-                    slots={{
-                        toolbar: DataGridToolbar,
-                    }}
-                    slotProps={{
-                        toolbar: { onRefresh: fetchData, onRemoveFilter: onRemoveFilter }
-                    }}
-                    showToolbar
-                    initialState={{
-                        pagination: {
-                            paginationModel: {
-                                pageSize: 5,
+                <ActionHandlersContext.Provider value={actionHandlers}>
+                    {!error && <DataGrid
+                        rows={data}
+                        columns={internalColDef}
+                        getRowId={(row) => row[id]}
+                        editMode="row"
+                        rowModesModel={rowModesModel}
+                        onRowModesModelChange={setRowModesModel}
+                        onRowEditStop={handleRowEditStop}
+                        processRowUpdate={processRowUpdate}
+                        filterModel={filterModel}
+                        onFilterModelChange={(newFilterModel) => setFilterModel(newFilterModel)}
+                        loading={loading}
+                        showToolbar
+                        slots={{
+                            toolbar: DataGridToolbar,
+                        }}
+                        slotProps={{
+                            toolbar: {
+                                onRefresh: fetchData,
+                                onRemoveFilter: onRemoveFilter,
+                                onAddRow: handleAddRow
+                            }
+                        }}
+                        initialState={{
+                            pagination: {
+                                paginationModel: {
+                                    pageSize: 5,
+                                },
                             },
-                        },
-                    }}
-                    pageSizeOptions={[5]}
-                />
+                        }}
+                        pageSizeOptions={[5]}
+                    />}
+                </ActionHandlersContext.Provider>
             </Box >
         </>
     );

@@ -16,7 +16,7 @@ const columns = [
     { field: 'technician_id', headerName: 'Technician ID', width: 150, type: 'number' },
 ];
 
-const PRIORITY_OPTIONS = ['Low', 'Medium', 'Critical'];
+const PRIORITY_OPTIONS = ['', 'Low', 'Medium', 'Critical'];
 
 function DiscrepancyDataGrid() {
     return (

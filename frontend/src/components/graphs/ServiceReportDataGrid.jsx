@@ -1,3 +1,4 @@
+import { useAuth } from "../../context/AuthContext.jsx"
 import GeneralDataGrid from './GeneralDataGrid.jsx';
 
 const columns = [
@@ -11,11 +12,14 @@ const columns = [
 ];
 
 function ServiceReportDataGrid() {
+    const { user } = useAuth();
     return (
         <GeneralDataGrid
             endpoint="/service_reports"
             columns={columns}
             title="Service Reports"
+            fullCRUD={(user?.role === "Clinical Admin" ||
+                user?.role === "Field Technician") ? true : false}
         />
     );
 }

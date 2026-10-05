@@ -3,7 +3,7 @@ import MaintenanceFlagsDataGrid from '../graphs/MaintenanceFlagsDataGrid.jsx';
 import DiscrepancyDataGrid from "../graphs/DiscrepancyDataGrid.jsx";
 import LowChargeDataGrid from '../graphs/LowChargeDataGrid.jsx';
 
-function SecondPage() {
+function MetricsPage() {
 
     return (
         <>
@@ -14,4 +14,4 @@ function SecondPage() {
     )
 }
 
-export default SecondPage;
+export default MetricsPage;

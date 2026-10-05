@@ -11,7 +11,7 @@ import HospitalDataGrid from './components/graphs/HospitalDataGrid.jsx';
 import TechnicianDataGrid from './components/graphs/TechnicianDataGrid.jsx';
 import WorkOrderDataGrid from './components/graphs/WorkOrderDataGrid.jsx';
 import ServiceReportDataGrid from './components/graphs/ServiceReportDataGrid.jsx';
-import SecondPage from './components/pages/SecondPage.jsx';
+import MetricsPage from './components/pages/MetricsPage.jsx';
 
 const tabsMap = {
     "Hospitals": <HospitalDataGrid />,
@@ -19,7 +19,7 @@ const tabsMap = {
     "Technicians": <TechnicianDataGrid />,
     "Work Orders": <WorkOrderDataGrid />,
     "Service Reports": <ServiceReportDataGrid />,
-    "Metrics": <SecondPage />
+    "Metrics": <MetricsPage />
 };
 const frontPage = (<GraphTabs tabDict={tabsMap} />);
 

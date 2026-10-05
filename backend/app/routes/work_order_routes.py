@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db, get_current_user, require_role
 from app.models import Equipment, Technician, WorkOrder, User, UserRole
-from app.models.enums import EquipmentStatus
+from app.models.enums import EquipmentStatus, WorkOrderPriority
 from app.models.orm_tables import Hospital
 from app.schemas.hospital_schema import MaintenanceFlagsRead, ReportingLinesRead
 from app.schemas.work_order_schema import DiscrepancyRead, WorkOrderCreate, WorkOrderRead, WorkOrderUpdate
@@ -21,10 +21,10 @@ async def get_work_orders(
 
 @router.get(path="/discrepancies", response_model=list[DiscrepancyRead])
 async def get_colocation_discrepancies(
+    priority: WorkOrderPriority | None = None,
     db: AsyncSession = Depends(get_db),
     _: User = Depends(get_current_user)
 ) -> list[DiscrepancyRead]:
-    print("\033[31mWORK ORDER DISCREPANCIES\033[0m")
     stmt = (
         select(
             WorkOrder.id.label("work_order_id"),
@@ -36,6 +36,8 @@ async def get_colocation_discrepancies(
         .join(Technician, Technician.id == WorkOrder.technician_id)
         .where(Equipment.hospital_id != Technician.hospital_id)
     )
+    if priority is not None:
+        stmt = stmt.where(WorkOrder.priority == priority)
     results = await db.execute(stmt)
     return [DiscrepancyRead.model_validate(result) for result in results]
 
@@ -45,7 +47,6 @@ async def get_work_order_byId(
     db: AsyncSession = Depends(get_db),
     _: User = Depends(get_current_user)
 ) -> WorkOrder:
-    print("\033[31mWORK ORDER by ID\033[0m")
     work_order = await db.get(WorkOrder, work_order_id)
     if work_order is None:
         raise HTTPException(
