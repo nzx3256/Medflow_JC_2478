@@ -3,8 +3,8 @@ import GeneralDataGrid from "./GeneralDataGrid";
 
 const columns = [
     { field: 'id', headerName: 'ID', width: 70, type: 'number' },
-    { field: 'full_name', headerName: 'Full Name', width: 300, editable: true },
-    { field: 'hospital_id', headerName: 'Hospital ID', width: 120, type: 'number', editable: true },
+    { field: 'full_name', headerName: 'Full Name', flex: 2, editable: true },
+    { field: 'hospital_id', headerName: 'Hospital ID', flex: 1, type: 'number', editable: true },
 ];
 
 function TechnicianDataGrid() {

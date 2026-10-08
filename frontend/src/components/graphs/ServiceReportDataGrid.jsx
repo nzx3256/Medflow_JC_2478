@@ -3,7 +3,7 @@ import GeneralDataGrid from './GeneralDataGrid.jsx';
 
 const columns = [
     { field: 'id', headerName: 'ID', width: 70, type: 'number' },
-    { field: 'notes', headerName: 'Notes', width: 400, type: 'string', editable: true },
+    { field: 'notes', headerName: 'Notes', width: 400, type: 'longText', editable: true },
     {
         field: 'created_at', headerName: 'Creation Time', width: 220, editable: true,
         type: 'dateTime', valueGetter: (value) => value && new Date(value)

@@ -1,0 +1,7 @@
+{
+	"Variables": {
+		"DATABASE_URL": "postgresql+asyncpg://postgres:postgres@medflow.cpcym8i4gj0c.us-east-2.rds.amazonaws.com:5432/medflow",
+		"SECRET_KEY": "aaed95ab20fd466b1a18d41871887f697f6d60b48547c6a851ca75ec3807be29",
+		"FRONTEND_ORIGIN": "https://d2779m5uvskg92.cloudfront.net"
+	}
+}

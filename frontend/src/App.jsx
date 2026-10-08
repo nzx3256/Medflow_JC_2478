@@ -12,12 +12,11 @@ import TechnicianDataGrid from './components/graphs/TechnicianDataGrid.jsx';
 import WorkOrderDataGrid from './components/graphs/WorkOrderDataGrid.jsx';
 import ServiceReportDataGrid from './components/graphs/ServiceReportDataGrid.jsx';
 import MetricsPage from './components/pages/MetricsPage.jsx';
+import BackToTopButton from './components/layout/BackToTopButton.jsx';
+import DataGridDisplay from './components/layout/DataGridDisplay.jsx';
 
 const tabsMap = {
-    "Hospitals": <HospitalDataGrid />,
-    "Equipment": <EquipmentDataGrid />,
-    "Technicians": <TechnicianDataGrid />,
-    "Work Orders": <WorkOrderDataGrid />,
+    "Dashboard": <DataGridDisplay />,
     "Service Reports": <ServiceReportDataGrid />,
     "Metrics": <MetricsPage />
 };
@@ -29,12 +28,13 @@ function Dashboard() {
         <>
             <AppHeader />
             {screen}
+            <BackToTopButton />
         </>
     );
 }
 
 function LoginHandle() {
-    const { isAuthenticated, login } = useAuth();
+    const { isAuthenticated } = useAuth();
     return (
         <>
             {isAuthenticated ? <Dashboard /> : <LoginPage />}

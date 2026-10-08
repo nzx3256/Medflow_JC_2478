@@ -43,7 +43,7 @@ function ActionsCell(props) {
                     <GridActionsCellItem
                         icon={<SaveIcon />}
                         label="Save"
-                        material={{ sx: { color: 'primary.main' } }}
+                        material={{ sx: { color: '#2196f3' } }}
                         onClick={() => handleSaveClick(props.id)}
                     />
                     <GridActionsCellItem
@@ -155,7 +155,7 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, fullCRUD = false
                 const response = await apiClient.post(resourceUrl, clonedRow);
                 updatedRow = { ...response.data, isNew: false };
                 if (typeof rowId === 'string') {
-                    setData((prevRows) => prevRows.filter((row) => row.id !== rowId));
+                    setData((prevRows) => [...prevRows.filter((row) => row.id !== rowId), updatedRow]);
                 }
             }
             else {
@@ -169,7 +169,7 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, fullCRUD = false
             setData((prevRows) =>
                 prevRows.map((r) => (r[id] === newRow[id] ? updatedRow : r))
             );
-            return updatedRow;
+            return { ...updatedRow };
         }
         catch (err) {
             // Have a snack bar pop up
@@ -227,7 +227,6 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, fullCRUD = false
                 }));
             },
             handleSaveClick: (id) => {
-                console.log("Saving");
                 setRowModesModel((prevRowModesModel) => ({
                     ...prevRowModesModel,
                     [id]: { mode: GridRowModes.View },
@@ -305,11 +304,11 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, fullCRUD = false
                                 borderColor: '#999',
                             },
                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                borderColor: '#1976d2',
+                                borderColor: 'primary.main',
                                 borderRadius: 1
                             },
                             '&.Mui-focused .MuiSelect-select': {
-                                color: '#1976d2',
+                                color: 'primary.main',
                             },
                             '& .MuiSelect-select': {
                                 color: '#777',
@@ -354,7 +353,7 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, fullCRUD = false
                             '& .MuiOutlinedInput-root': {
                                 '& fieldset': { borderColor: '#777' },           // default
                                 '&:hover fieldset': { borderColor: '#999' },// hover
-                                '&.Mui-focused fieldset': { borderColor: '#1976d2', borderRadius: 1 }, // focused
+                                '&.Mui-focused fieldset': { borderColor: 'primary.main', borderRadius: 1 }, // focused
                             },
                             // label color
                             '& .MuiInputLabel-root': {
@@ -363,7 +362,7 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, fullCRUD = false
                             },
                             // input (text) color and placeholder
                             '& .Mui-focused .MuiInputBase-input': {
-                                color: '#1976d2',                                  // text color
+                                color: 'primary.main',                                  // text color
                                 opacity: 1,
                             },
                             '& .MuiInputBase-input': {
@@ -421,7 +420,12 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, fullCRUD = false
     let sizeOffset = controls?.size ?? 0;
     return (
         <>
-            <Box sx={{ mt: 2, mb: 8, height: 420, width: '100%' }} >
+            <Box sx={{
+                mt: 2, mb: 8, height: 420,
+                //display: 'inline-block', 
+                //minWidth: { sm: 600, md: 900, lg: 500, xl: 680 },
+                //maxWidth: { xs: '100%', sm: '100%', md: '100%', lg: '47%' }
+            }} >
                 <Grid container spacing={2}>
                     {controls?.type === 'select' && selectPartial(controls?.size, controls?.label, controls?.options)}
                     {controls?.type === 'filter' && filterTextField(controls?.size, controls?.label)}
@@ -477,7 +481,8 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, fullCRUD = false
                                 },
                             },
                         }}
-                        pageSizeOptions={[5]}
+                        pageSizeOptions={[5, 20, 50, { value: -1, label: 'All' }]}
+                        sx={{ '& textarea': { color: '#000' } }}
                     />}
                 </ActionHandlersContext.Provider>
             </Box >

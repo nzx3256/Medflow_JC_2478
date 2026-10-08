@@ -5,6 +5,7 @@ import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy';
 import { useAuth } from "../../context/AuthContext.jsx";
 import { usePage } from "../../context/PageContext.jsx";
 import { red } from '@mui/material/colors';
+import ProfileAvatar from "./ProfileAvatar.jsx";
 
 function AppHeader() {
     const { user, logout } = useAuth();
@@ -18,9 +19,10 @@ function AppHeader() {
                     </Button>
                 </Box>
                 <Box component={'span'} sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 2 }}>
-                    <Person sx={{ mr: 0 }} />
-                    <Typography sx={{ ml: 0 }} variant='body2'>{user?.sub} ({user?.role})</Typography>
-                    <Button color='inherit' onClick={logout}>Log out</Button>
+                    <ProfileAvatar />
+                    {/*<Person sx={{ mr: 0 }} />*/}
+                    {/*<Typography sx={{ ml: 0 }} variant='body2'>{user?.sub} ({user?.role})</Typography>*/}
+                    {/*<Button color='inherit' onClick={logout}>Log out</Button>*/}
                 </Box>
             </Toolbar>
         </AppBar>
