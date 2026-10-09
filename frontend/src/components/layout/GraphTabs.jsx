@@ -25,9 +25,8 @@ function GraphTabs({ tabDict, startingValue = undefined }) {
                     borderBottom: 1,
                     borderColor: 'divider',
                     "& .MuiTabs-indicator": {
-                        backgroundColor: red[200],
+                        backgroundColor: "primary.light",
                     },
-
                 }}
             >
                 {entries.map(([label, _]) => {
@@ -39,7 +38,7 @@ function GraphTabs({ tabDict, startingValue = undefined }) {
                             sx={{
                                 color: "#777",
                                 "&.Mui-selected": {
-                                    color: red[400],
+                                    color: "primary.main",
                                 },
                             }}
                         />

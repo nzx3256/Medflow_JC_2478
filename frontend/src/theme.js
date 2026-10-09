@@ -1,12 +1,13 @@
 // src/theme.js
+import { red } from '@mui/material/colors';
 import { createTheme } from '@mui/material/styles';
 
 const lightPalette = {
     mode: 'light', // Can be 'light' or 'dark'
     primary: {
-        main: '#e57373', // Custom primary color
-        light: '#ef9a9a',
-        dark: '#f44336',
+        main: red[300], // Custom primary color
+        light: red[200],
+        dark: red[500],
         contrastText: '#fff',
     },
     secondary: {
@@ -14,6 +15,10 @@ const lightPalette = {
         light: '#5c6bc0',
         dark: '#303f9f',
         contrastText: '#fff',
+    },
+    text: {
+        primary: '#111',
+        background: '#fff'
     },
     background: {
         default: '#f5f5f5', // Main app background
@@ -24,24 +29,28 @@ const lightPalette = {
 const darkPalette = {
     mode: 'dark', // Can be 'light' or 'dark'
     primary: {
-        main: '#e57373', // Custom primary color
-        light: '#ef9a9a',
-        dark: '#f44336',
-        contrastText: '#afafaf',
+        main: '#b5005a',
+        light: '#fd007e',
+        dark: '#6c0036',
+        contrastText: '#fff',
     },
     secondary: {
         main: '#3f51b5',
         light: '#5c6bc0',
         dark: '#303f9f',
-        contrastText: '#afafaf',
+        contrastText: '#fff',
+    },
+    text: {
+        primary: '#f1f1f1',
+        background: '#000'
     },
     background: {
-        default: '#2B2B2B', // Main app background
+        default: '#1B1B1B', // Main app background
         paper: '#384959',   // Card / Paper component background
     },
 };
 
-const baseTheme = {
+let baseTheme = {
     // 1. Customizing the Color Palette
     palette: lightPalette,
 
@@ -56,17 +65,6 @@ const baseTheme = {
             textTransform: 'none', // Disables the default ALL CAPS styling for buttons
         },
     },
-
-    // 3. Customizing Global Breakpoints
-    // breakpoints: {
-    //     values: {
-    //         xs: 0,
-    //         sm: 600,
-    //         md: 900,
-    //         lg: 1200,
-    //         xl: 1536,
-    //     },
-    // },
 
     // 4. Global Component Component Overrides
     components: {
@@ -100,7 +98,7 @@ const theme = (mode) => {
             break;
         default:
     }
-    return baseTheme;
+    return createTheme(baseTheme);
 }
 
 export default theme;

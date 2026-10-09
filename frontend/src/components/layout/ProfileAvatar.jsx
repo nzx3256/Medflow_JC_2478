@@ -6,6 +6,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 import { useAuth } from "../../context/AuthContext";
+import SettingsPage from "../pages/SettingsPage";
 
 const stringToColor = (str) => {
     let hash = 0;
@@ -24,8 +25,10 @@ function ProfileAvatar() {
     const { user, logout } = useAuth();
     const name = user?.sub ?? "NA";
     const [anchorEl, setAnchorEl] = useState(null);
+    const [settingsOpen, setSettingsOpen] = useState(false);
     let open = useMemo(() => { return anchorEl != undefined; }, [anchorEl]);
     const handleClose = () => setAnchorEl(null);
+    const settingsClose = () => setSettingsOpen(false);
     return (
         <>
             <IconButton
@@ -53,19 +56,21 @@ function ProfileAvatar() {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                <MenuItem onClick={handleClose}>
+
+                <MenuItem onClick={() => { handleClose(); setSettingsOpen(true) }}>
                     <ListItemIcon>
                         <SettingsIcon fontSize="small" />
                     </ListItemIcon>
                     Settings
                 </MenuItem>
-                <MenuItem onClick={() => { handleClose(); logout() }}>
+                <MenuItem onClick={() => { handleClose(); logout(); }}>
                     <ListItemIcon>
                         <LogoutIcon fontSize="small" />
                     </ListItemIcon>
                     Log out
                 </MenuItem>
             </Menu>
+            <SettingsPage open={settingsOpen} onClose={settingsClose} />
         </>
     );
 }

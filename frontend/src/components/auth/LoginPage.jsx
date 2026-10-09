@@ -8,7 +8,7 @@ import { useState } from "react";
 import { red } from '@mui/material/colors';
 
 function LoginPage() {
-    const [error, setError] = useState(null);
+    const [status, setStatus] = useState(null);
     const usernameRef = useRef(null);
     const passwordRef = useRef(null);
 
@@ -16,7 +16,7 @@ function LoginPage() {
 
     async function handleSubmit(event) {
         event.preventDefault();
-        setError(null);
+        setStatus(null);
         const username = usernameRef?.current?.value;
         const password = passwordRef?.current?.value;
         if (username != undefined && password != undefined) {
@@ -24,11 +24,11 @@ function LoginPage() {
                 await login(username, password);
             }
             catch {
-                setError("Invalid username or password");
+                setStatus({ type: "error", message: "Invalid username or password" });
             }
         }
         else {
-            setError("Username and Password are required fields");
+            setStatus("Username and Password are required fields");
         }
     }
     const elementSx = { m: 1 }
@@ -38,53 +38,65 @@ function LoginPage() {
                 component="form" onSubmit={(event) => handleSubmit(event)}
                 sx={{ justifyContent: 'center', width: 300, pb: 1, borderRadius: 0 }}
             >
-                <Box sx={{ backgroundColor: red[300], p: 1, mb: 1, borderRadius: 0 }}>
+                <Box sx={{ backgroundColor: 'primary.main', p: 1, mb: 1, borderRadius: 0 }}>
                     <Typography variant="h6" sx={{
                         ...elementSx,
                         mt: 0,
-                        color: 'white',
+                        color: 'primary.contrastText',
                         width: '100%',
                         justifyContent: 'center'
                     }}
                     > Medflow Login </Typography>
                 </Box>
-                <TextField
-                    label="Username"
-                    name="username"
-                    type="text"
-                    required={true}
-                    inputRef={usernameRef}
-                    sx={{
-                        ...elementSx,
-                    }}
-                />
-                <TextField
-                    label="Password"
-                    name="password"
-                    type="password"
-                    required={true}
-                    inputRef={passwordRef}
-                    sx={{
-                        ...elementSx,
-                    }}
-                />
-                <Button
-                    type="submit"
-                    children={"Log In"}
-                    variant="contained"
-                    sx={{ ...elementSx, backgroundColor: red[400] }}
-                />
+                <div>
+                    <TextField
+                        label="Username"
+                        name="username"
+                        type="text"
+                        required={true}
+                        inputRef={usernameRef}
+                        sx={{
+                            ...elementSx,
+                        }}
+                    />
+                </div>
+                <div>
+                    <TextField
+                        label="Password"
+                        name="password"
+                        type="password"
+                        required={true}
+                        inputRef={passwordRef}
+                        sx={{
+                            ...elementSx,
+                        }}
+                    />
+                </div>
+                <div>
+                    <Button
+                        type="submit"
+                        children={"Log In"}
+                        variant="contained"
+                        sx={{ ...elementSx, backgroundColor: 'primary.dark' }}
+                    />
+                </div>
             </Paper>
             <Snackbar
-                open={error != null}
+                open={status != null}
                 autoHideDuration={5000}
-                message={error ?? "No Content"}
+
                 slots={{
                     transition: (props) => <Slide {...props} direction="down" />
                 }}
+                sx={{ p: 0, m: 0 }}
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                onClose={() => setError(null)}
+                onClose={() => setStatus(null)}
             >
+                <Alert
+                    sx={{ m: 0 }}
+                    severity={status?.type}
+                    children={status?.message ?? "No Content"}
+                />
             </Snackbar>
         </Box >
     );

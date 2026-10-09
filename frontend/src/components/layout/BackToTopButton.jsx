@@ -29,12 +29,11 @@ function BackToTopButton() {
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             sx={{
                 position: 'fixed',
-                right: '5%',
-                bottom: '5%',
-                backgroundColor: red[300],
-                transform: 'translate(-50%, -50%)',
+                right: '1%',
+                bottom: '1%',
+                backgroundColor: "primary.light",
                 '&:hover': {
-                    backgroundColor: red[500]
+                    backgroundColor: "primary.main"
                 },
                 display: visible ? "inline" : "none",
             }}

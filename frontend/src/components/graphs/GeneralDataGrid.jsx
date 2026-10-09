@@ -9,7 +9,7 @@ import {
 } from '@mui/x-data-grid';
 import {
     Grid, Alert, Box, Typography, TextField, InputLabel, FormControl, Button, Select,
-    MenuItem, Tooltip
+    MenuItem, Tooltip,
 } from '@mui/material';
 import apiClient from '../../api/client.js';
 import { Search } from '@mui/icons-material';
@@ -17,7 +17,7 @@ import DataGridToolbar from '../layout/DataGridToolbar.jsx';
 import { red } from '@mui/material/colors';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 
@@ -358,7 +358,7 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, fullCRUD = false
                             // label color
                             '& .MuiInputLabel-root': {
                                 color: 'gray',
-                                '&.Mui-focused': { color: '#3996f2' },
+                                '&.Mui-focused': { color: 'primary.main' },
                             },
                             // input (text) color and placeholder
                             '& .Mui-focused .MuiInputBase-input': {
@@ -438,7 +438,7 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, fullCRUD = false
                                 width: '100%',
                                 justifyContent: 'center',
                                 alignContent: 'center',
-                                color: red[400]
+                                color: 'primary.main'
                             }}
                             variant="h6"
                             component="span"
@@ -482,7 +482,7 @@ function GeneralDataGrid({ endpoint, title, id = 'id', columns, fullCRUD = false
                             },
                         }}
                         pageSizeOptions={[5, 20, 50, { value: -1, label: 'All' }]}
-                        sx={{ '& textarea': { color: '#000' } }}
+                        sx={{ '& textarea': { color: 'text.primary' } }}
                     />}
                 </ActionHandlersContext.Provider>
             </Box >

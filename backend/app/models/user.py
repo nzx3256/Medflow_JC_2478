@@ -8,7 +8,7 @@ from .orm_tables import Base
 class User(Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True, index=True)
-    username: Mapped[str] = mapped_column(String(50))
+    username: Mapped[str] = mapped_column(String(50), unique=True)
     hashed_password: Mapped[str] = mapped_column(Text)
     role: Mapped["UserRole"] = mapped_column(
         sql_enum(

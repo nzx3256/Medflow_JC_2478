@@ -5,22 +5,17 @@ export const PageContext = createContext(null);
 export function PageProvider({ children, frontPage }) {
     const [refreshKey, setRefreshKey] = useState(0);
     const [screen, setScreen] = useState(frontPage);
-    const [screenMode, setScreenMode] = useState('light');
-    const toggleMode = () => {
-        setScreenMode((prev) => (prev == 'light' ? 'dark' : 'light'));
-        sessionStorage.setItem('screenMode', screenMode);
-    };
     const triggerRefresh = () => {
         setRefreshKey((prev) => ((prev + 1) % Number.MAX_SAFE_INTEGER));
     }
-    const values = { screen, setScreen, screenMode, toggleMode, frontPage, refreshKey, triggerRefresh };
+    const values = { screen, setScreen, frontPage, refreshKey, triggerRefresh };
     return <PageContext.Provider value={values}>{children}</PageContext.Provider>;
 }
 
 export function usePage() {
     const context = useContext(PageContext);
     if (!context) {
-        throw new Error("usePage() must be wrapped in a PageContextProvider");
+        throw new Error("usePage() must be wrapped in a PageProvider");
     }
     return context;
 }

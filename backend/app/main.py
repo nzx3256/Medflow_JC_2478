@@ -2,11 +2,11 @@ import os
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from app.routes import hospital_routes, equipment_routes, service_report_routes, \
-    technician_routes, work_order_routes, auth
+    technician_routes, user_routes, work_order_routes, auth
 
 FRONTEND_ORIGIN = os.environ.get("FRONTEND_ORIGIN", "http://localhost:5173")
 
-app = FastAPI(title="MedFlow Backend")
+app = FastAPI(title="MedFlow Backend", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,6 +21,7 @@ app.include_router(equipment_routes.router)
 app.include_router(technician_routes.router)
 app.include_router(work_order_routes.router)
 app.include_router(service_report_routes.router)
+app.include_router(user_routes.router)
 app.include_router(auth.router)
 
 @app.get("/health", tags=["health"])
