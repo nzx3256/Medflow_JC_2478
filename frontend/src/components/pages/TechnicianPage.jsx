@@ -13,14 +13,16 @@ function TechnicianPage() {
         if (user?.role == "Clinical Admin") {
             setScreen(<AdminPage />);
         }
+        else if (user?.role == "Field Technician");
     }, [user]);
+    if (user?.role == "Auditor") setScreen(frontPage);
+    //console.log((<AdminPage />).type);
     return (
         <>
             <Typography variant='h4' sx={{ color: 'primary.contrastText' }}>
                 Technician Page
             </Typography>
             <Button>
-
             </Button>
         </>
     );

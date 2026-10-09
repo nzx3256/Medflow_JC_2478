@@ -27,3 +27,7 @@ app.include_router(auth.router)
 @app.get("/health", tags=["health"])
 async def get_health():
     return {"status": "ok"}
+
+@app.get("/version", tags=["version"])
+async def get_version():
+    return {"version", app.version}

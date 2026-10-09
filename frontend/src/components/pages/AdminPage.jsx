@@ -12,7 +12,7 @@ import AddUserCard from "../layout/AddUserCard.jsx";
 
 function AdminPage() {
     const { user } = useAuth();
-    const { setScreen, refreshKey } = usePage();
+    const { frontPage, setScreen } = usePage();
 
     const [allUsers, setAllUsers] = useState([]);
     const [error, setError] = useState(null);
@@ -27,6 +27,7 @@ function AdminPage() {
             setError("Could not fetch User Data");
         }
     };
+    if (user?.role == "Auditor") setScreen(frontPage);
 
     useEffect(() => {
         setError(null);
@@ -34,8 +35,9 @@ function AdminPage() {
             setScreen(<TechnicianPage />);
             return;
         }
+        else if (user?.role == "Clinical Admin");
         fetchUsers();
-    }, [user, refreshKey]);
+    }, [user]);
 
     return (
         <>

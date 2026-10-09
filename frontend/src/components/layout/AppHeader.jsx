@@ -27,15 +27,16 @@ function AppHeader() {
         return role;
     }, [user]);
 
-    const changeScreen = (role) => {
-        let specialScreen = undefined;
-        if (shortRole === "Admin") {
-            specialScreen = <AdminPage />;
-        } else if (shortRole === "Technician") {
-            specialScreen = <TechnicianPage />;
+    const specialScreen = useMemo(() => {
+        switch (user?.role) {
+            case "Clinical Admin":
+                return <AdminPage />;
+                break;
+            case "Field Technician":
+                return <TechnicianPage />;
+                break;
         }
-        setScreen(specialScreen);
-    }
+    }, [user]);
 
     return (
         <AppBar position="static" sx={{ backgroundColor: 'primary.main' }}>
@@ -50,13 +51,15 @@ function AppHeader() {
                     </Button>
                 </Box>
                 <Box component={'span'} sx={{ flex: 3 }}>
-                    {shortRole != "" && <Button onClick={() => changeScreen(shortRole)}>
-                        <Chip
-                            label={`${shortRole} Page`}
-                            variant="outlined"
-                            sx={{ border: 2, borderColor: 'secondary.dark', backgroundColor: 'primary.light' }}
-                        />
-                    </Button>}
+                    {shortRole != "" && screen.type != specialScreen.type &&
+                        <Button onClick={() => setScreen(specialScreen)}>
+                            <Chip
+                                label={`${shortRole} Page`}
+                                variant="outlined"
+                                sx={{ border: 2, borderColor: 'secondary.dark', backgroundColor: 'primary.light' }}
+                            />
+                        </Button>
+                    }
                 </Box>
                 <Box component={'span'}
                     sx={{
@@ -74,7 +77,7 @@ function AppHeader() {
                     {/*<Button color='inherit' onClick={logout}>Log out</Button>*/}
                 </Box>
             </Toolbar>
-        </AppBar>
+        </AppBar >
     );
 }
 
